@@ -12,10 +12,30 @@ class User {
   password!: string;
   token?: string;
 }
+class blogInterface {
+  _id!: string;
+  name!: string;
+  date!: Date;
+  content!: string;
+  comments?: comment[];
+}
+class comment {
+  _id!: string;
+  date!: string;
+  user_id!: string;
+  blog_id!: string;
+  comment!: string;
+  responses?: comment[];
+}
+type blogType = {
+  comment: comment;
+  blog: blogInterface;
+
+}
 const withDB = async (operations: any, res: any) => {
   try {
     const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true })
-    const db = client.db('prvn');
+    const db = client.db('linnet');
     await operations(db);
 
     client.close();
@@ -48,6 +68,7 @@ app.post(`/api/login`, async (req, res) => {
   }
 });
 
+
 app.get('/api/logins', async (req, res) => {
 
   withDB(async (db: Db) => {
@@ -75,6 +96,46 @@ app.get('/api/signup/new', async (req, res) => {
     var x = new User()
     x._id = `${Math.floor(Math.random() * Date.now())}`;
     res.status(200).json(x);
+  }, res)
+})
+
+app.get('/api/blogs', async (req, res) => {
+  withDB(async (db: Db) => {
+    const blog = await db.collection('blog').find({}).toArray();
+    const newBlog = blog.map(x => x.blog)
+    console.log(newBlog)
+    res.status(200).json(newBlog ?? 'error');
+  }, res);
+})
+
+app.post('/api/blog', async (req, res) => {
+  let blog: blogInterface = req.body
+  console.log('blog:', blog)
+  withDB(async (db: Db) => {
+    db.collection('blog').insertOne(blog);
+    const updatedArticleInfo = await db.collection('blog').findOne({ blog: { _id: blog._id } })
+    res.status(200).json(updatedArticleInfo)
+  }, res)
+})
+
+app.put('/api/comment', async (req, res) => {
+  let blog: blogType = req.body
+  console.log('blog:', blog)
+  let newBlog = blog.blog
+  newBlog.comments?.push(blog.comment)
+  const filter = { "blog._id": newBlog._id }
+  // this option instructs the method to create a document if no documents match the filter
+  const options = { upsert: false };
+  // create a document that sets the plot of the movie
+  const updateDoc = {
+    $set: {
+      "blog.comments": newBlog.comments
+    },
+  };
+  withDB(async (db: Db) => {
+    db.collection('blog').updateOne(filter, updateDoc, options);
+    const updatedArticleInfo = await db.collection('blog').find({}).toArray()
+    res.status(200).json(updatedArticleInfo)
   }, res)
 })
 

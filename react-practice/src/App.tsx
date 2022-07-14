@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavBar } from './Tools/navbar';
-import { User } from './interface/user';
+import { Links, User } from './interface/user';
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,9 +11,13 @@ import {
 import { Home } from './Pages/Home'
 import { Login } from './Pages/Login';
 import history from './interface/history';
-import { Profile } from './Pages/Profile';
+import BlogHomeFunction from './Pages/BlogHomeFunction';
 import { Signup } from './Pages/Signup';
+import BlogProvider from "./services/BlogProvider";
+
 import './App.scss';
+import BlogHomeClass from './Pages/BlogHomeClass';
+import { HomePage } from './Pages/HomePage';
 
 interface AppUser {
   user: User,
@@ -37,27 +41,43 @@ export class App extends React.Component<any, AppUser> {
     }
 
   }
-  user: User = { username: '', password: '', _id: '' }
+  private signOut = () => {
+    window.sessionStorage.removeItem('user')
+    this.setState({ loggedIn: false })
+  }
+  private loginScenario = () => {
+    if (this.state.loggedIn) return <button className="navbar__right" onClick={() => this.signOut()}>Signout</button>
+    else return <Link key={Math.random.toString()} className="navbar__right" to="/login">Login</Link>
+  }
+  links: Links[] = [
+    { _id: '0', className: "navbar__link", path: '/', name: 'Home' }, { _id: '1', className: "navbar__link", path: '/blogHome', name: 'Blog Home' }, //{ _id: '2', className: "navbar__link", path: '/blogHomeFunction', name: 'Blog Home' },
+    { _id: '6', className: "navbar__link", path: '/newBlog', name: 'newBlog' }, { _id: '4', className: "navbar__link", path: '/login', name: 'SignInOut', callback: () => this.loginScenario() }, { _id: '5', className: "navbar__right", path: '/signup', name: 'Signup' }
+  ]
   public render() {
     return (
-      <div className="App">
+      <>
         <Routes >
-          <Route path='/' element={<NavBar user={this.state.user} loggedIn={this.state.loggedIn} logOut={() => this.setState({ loggedIn: false })} />} >
-            <Route index element={<Home />} />
-            <Route path='/profile' element={<Profile />} />
+          <Route path='/' element={<NavBar key={'12aa'} links={this.links} />}>
+            <Route path='/' element={<Home links={this.links.slice(0, this.links.length - 2)} />}>
+              <Route index element={<HomePage />} />
+              <Route path='/blogHome' element={<BlogHomeClass new={false} />} />
+              {/* <Route path='/blogHomeFunction' element={<BlogProvider><BlogHomeFunction /></BlogProvider>} /> */}
+              <Route path='/newBlog' element={<BlogProvider><BlogHomeClass new={true} /></BlogProvider>} />
+            </Route>
             <Route path='/login' element={<div>
               <Login loggedIn={this.state.loggedIn} login={this.logMeIn} />
-              {this.state.loggedIn ? <Navigate to='/profile' /> : <></>}
+              {this.state.loggedIn ? <Navigate to='/blogHome' /> : <></>}
             </div>
+
             } />
             <Route path='/signup' element={<div>
               <Signup loggedIn={this.state.loggedIn} login={this.logMeIn} />
-              {this.state.loggedIn ? <Navigate to='/profile' /> : <></>}
+              {this.state.loggedIn ? <Navigate to='/blogHome' /> : <></>}
             </div>
             } />
           </Route>
         </Routes>
-      </div >
+      </>
     )
   }
 }
