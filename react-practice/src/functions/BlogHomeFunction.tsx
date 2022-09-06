@@ -1,6 +1,6 @@
 import { FC, Fragment } from "react";
 import { pictureCardInterface } from "../interface/user";
-import { useBlogContext } from "../services/context";
+import { useBlogContext } from "../hooks/context";
 import Blog from "../Tools/Blog";
 import NewBlog from '../Tools/NewBlog'
 import PersonCard from "../Tools/PersonCard";

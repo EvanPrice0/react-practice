@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, useEffect, Component } from "react"
+import { Component } from "react"
 import { blogInterface, Comment } from "../interface/user";
 import axios from 'axios';
-import { BlogContext } from "./context";
 
 interface BlogServiceProps {
     userName: string
@@ -23,9 +22,9 @@ export class BlogService extends Component<BlogServiceProps, BlogServiceState>{
     initBlog: blogInterface[] = []
     constructor(props: any) {
         super(props)
-        this.addBlog.bind(this)
         this.state = { blogs: [] }
-        this.getBlogs.bind(this)
+        this.addBlog = this.addBlog.bind(this)
+        this.addBlogComment.bind(this)
     }
 
     public addBlog = async (blog: blogInterface): Promise<blogInterface[] | undefined> => {
@@ -41,6 +40,7 @@ export class BlogService extends Component<BlogServiceProps, BlogServiceState>{
     }
 
     public addBlogComment = async (blog: blogInterface, comment: Comment): Promise<blogInterface[] | undefined> => {
+        console.log(blog, comment)
         const resp = await axios.put<blogInterface[]>('http://localhost:8000/api/comment', { blog: blog, comment: comment }, { headers: headers }
         );
         if (resp.status === 200) {
@@ -52,7 +52,6 @@ export class BlogService extends Component<BlogServiceProps, BlogServiceState>{
     public getBlogs = async (): Promise<blogInterface[] | undefined> => {
         const resp = await axios.get<blogInterface[]>('http://localhost:8000/api/blogs', { headers: headers })
         if (resp.status === 200) {
-            this.setState({ blogs: resp.data })
             return resp.data
         }
         else return undefined

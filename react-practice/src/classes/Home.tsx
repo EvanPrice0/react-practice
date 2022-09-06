@@ -10,7 +10,6 @@ import { Sidebar } from "./Home.style";
 export class Home extends React.Component<{ links: Links[] }, {}> {
     constructor(props: any) {
         super(props)
-        console.log(window.location.pathname)
     }
 
     render() {

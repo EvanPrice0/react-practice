@@ -7,7 +7,7 @@ import {
     Outlet
 } from "react-router-dom";
 import { Links, User } from '../interface/user'
-import { Home } from '../Pages/Home';
+import { Home } from '../classes/Home';
 import LinkList from './LinkList';
 import './navbar.scss'
 interface myProps {

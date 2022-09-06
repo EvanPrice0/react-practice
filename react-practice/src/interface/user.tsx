@@ -1,5 +1,6 @@
 export interface User {
     _id: string,
+    image: string,
     username: string,
     password: string,
     token?: string

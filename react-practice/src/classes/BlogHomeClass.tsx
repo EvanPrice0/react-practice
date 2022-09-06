@@ -1,12 +1,9 @@
 import { Component, Fragment } from "react";
-import { Card, Button } from "react-bootstrap";
 import { blogInterface, pictureCardInterface } from "../interface/user";
 import BlogService from "../services/BlogService";
-import { BlogContext, useBlogContext } from "../services/context";
 import Blog from "../Tools/Blog";
 import NewBlog from '../Tools/NewBlog'
-import PersonCard from "../Tools/PersonCard";
-import PictureCard from "../Tools/PictureCard";
+
 
 
 function getName(size: number) {
@@ -26,31 +23,35 @@ const cards = getName(12)
 
 export class BlogHomeClass extends Component<{ new: boolean }, { blog: blogInterface[] }> {
     private blogService: BlogService = new BlogService('')
+    getBlogav: any
     constructor(props: any) {
         super(props)
-        this.state = { blog: [] }
     }
 
-    async componentDidMount() {
-        this.getBlog = this.getBlog.bind(this)
-
-        await this.getBlog()
-    }
-    private getBlog = async () => {
-        let blogs = await this.blogService.getBlogs()
-        this.setState({ blog: blogs as blogInterface[] })
+    componentDidMount = () => {
+        this.getBlogs = this.getBlogs.bind(this)
+        this.blogService.getBlogs = this.blogService.getBlogs.bind(this)
+        this.getBlogs()
+        this.getTheBlogs = this.getTheBlogs.bind(this);
     }
 
+    private getBlogs() {
+        this.blogService.getBlogs().then((blogs) => {
+            this.setState({ blog: blogs as blogInterface[] })
+        })
+    }
     private getTheBlogs = (): any[] => {
         if (this.state) {
             const row: any[] = []
-            this.state.blog.forEach((iterator) => {
-                row.push(<div key={iterator.name} style={{
-                    flex: "1 1 250px",
-                }}>
-                    {this.props.new ? <NewBlog /> : <Blog key={iterator.name} {...iterator} />}
-                </div>)
-            })
+            this.props.new ?
+                row.push(<NewBlog key={'newBlog'} />) :
+                this.state.blog.forEach((iterator) => {
+                    row.push(<div key={iterator.name} style={{
+                        flex: "1 1 250px",
+                    }}>
+                        {<Blog key={iterator.name} {...iterator} />}
+                    </div>)
+                })
             return row;
         }
         return [];

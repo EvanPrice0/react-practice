@@ -1,7 +1,7 @@
 import { Component } from "react"
 import { Card, Button } from "react-bootstrap"
 import { pictureCardInterface } from '../interface/user'
-import Image from './linnet.jpg'
+import Image from '../assets/linnet.jpg'
 export class PersonCard extends Component<pictureCardInterface, {}>{
     constructor(props: any) {
         super(props)

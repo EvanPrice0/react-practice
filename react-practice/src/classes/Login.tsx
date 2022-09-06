@@ -1,21 +1,22 @@
 import { Component, SyntheticEvent } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { User } from "../interface/user";
 import { AuthService } from "../services/AuthService";
-interface SignupProps {
+interface LoginProps {
     loggedIn?: boolean
     login: (x: User) => void
 }
 
-interface SignupState {
+interface LoginState {
     username: string
     password: string
 }
-interface SignupEvent {
+interface LoginEvent {
     target: any
 }
-export class Signup extends Component<SignupProps, SignupState>{
+export class Login extends Component<LoginProps, LoginState>{
     private authService: AuthService = new AuthService('')
-    constructor(props: SignupProps) {
+    constructor(props: LoginProps) {
         super(props)
         this.state = {
             username: '',
@@ -23,15 +24,15 @@ export class Signup extends Component<SignupProps, SignupState>{
         }
         this.submitEvent.bind(this)
     }
-    private getUsername(event: SignupEvent) {
+    private getUsername(event: LoginEvent) {
         this.setState({ username: event.target.value })
     }
-    private getPassword(event: SignupEvent) {
+    private getPassword(event: LoginEvent) {
         this.setState({ password: event.target.value })
     }
     private submitEvent = async (event: SyntheticEvent) => {
         event.preventDefault();
-        let results: User | undefined = await this.authService.postLogin(this.state.username, this.state.password, 'http://localhost:8000/api/signup')
+        let results: User | undefined = await this.authService.postLogin(this.state.username, this.state.password, 'http://localhost:8000/api/login')
         if (results != undefined) {
             this.props.login(results)
 
