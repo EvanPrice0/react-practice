@@ -23,7 +23,9 @@ class comment {
   _id!: string;
   date!: string;
   user_id!: string;
+  username!: string;
   blog_id!: string;
+  title!: string;
   comment!: string;
   responses?: comment[];
 }
